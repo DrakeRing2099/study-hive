@@ -3,7 +3,23 @@
 {% block title %}Home - E-Library{% endblock %}
 
 {% block content %}
-<h1>Welcome to the E-Library</h1>
-<p>Discover, upload, and share study materials.</p>
-{% endblock %}
+<div class="container">
+    <h2>Popular Resources</h2>
+    <ul>
+        {% for resource in popular_resources %}
+            <li>
+                <a href="{% url 'resource_detail' resource_id=resource.id %}">{{ resource.title }}</a>
+            </li>
+        {% endfor %}
+    </ul>
 
+    <h2>Recent Resources</h2>
+    <ul>
+        {% for resource in recent_resources %}
+            <li>
+                <a href="{% url 'resource_detail' resource_id=resource.id %}">{{ resource.title }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

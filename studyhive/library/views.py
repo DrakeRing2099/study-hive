@@ -106,7 +106,13 @@ def index(request):
 
     # Authenticated users view their inbox
     if request.user.is_authenticated:
-        return render(request, "library/index.html")
+        popular_resources = Resource.objects.filter(is_active=True).order_by('-views_count')[:10]
+        recent_resources = Resource.objects.filter(is_active=True).order_by('-upload_date')[:10]
+        context = {
+        'popular_resources': popular_resources,
+        'recent_resources': recent_resources,
+        }
+        return render(request, 'library/index.html', context)
 
     # Everyone else is prompted to sign in
     else:
