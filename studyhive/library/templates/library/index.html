@@ -1,23 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StudyHive - Welcome</title>
+{% extends 'library/layout.html' %}
 
-    <!-- Load the static tag -->
-    {% load static %}
+{% block title %}Home - E-Library{% endblock %}
 
-    <!-- Link to styles.css -->
-    <link rel="stylesheet" type="text/css" href="{% static 'library/styles.css' %}">
-</head>
-<body>
-    <header>
-        <h1>Welcome to StudyHive</h1>
-    </header>
+{% block content %}
+<h1>Welcome to the E-Library</h1>
+<p>Discover, upload, and share study materials.</p>
+{% endblock %}
 
-    <main>
-        <p>Your platform for accessing, uploading, and sharing study materials.</p>
-    </main>
-</body>
-</html>
