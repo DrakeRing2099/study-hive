@@ -28,6 +28,17 @@
         </p>
     {% endif %}
     
+    {% if user.is_authenticated %}
+    {% if resource in user.bookmarked_resources.all %}
+        <a href="{% url 'remove_bookmark' resource_id=resource.id %}" class="btn btn-warning">Remove Bookmark</a>
+    {% else %}
+        <a href="{% url 'add_bookmark' resource_id=resource.id %}" class="btn btn-success">Add Bookmark</a>
+    {% endif %}
+    {% else %}
+        <p><a href="{% url 'login' %}">Log in</a> to bookmark this resource.</p>
+    {% endif %}
+
+
     <!-- Display Subject -->
     {% if resource.subject %}
         <p><strong>Subject:</strong> <a href="{% url 'subject_resources' subject_id=resource.subject.id %}">{{ resource.subject.name }}</a></p>
@@ -49,7 +60,7 @@
     {% else %}
         <p><a href="{% url 'login' %}">Log in</a> to rate this resource.</p>
     {% endif %}
-    
+
     <!-- Comments -->
     <h4>Comments</h4>
     {% if comments %}
@@ -79,4 +90,5 @@
         <p><a href="{% url 'login' %}">Log in</a> to post a comment.</p>
     {% endif %}
 </div>
+    
 {% endblock %}

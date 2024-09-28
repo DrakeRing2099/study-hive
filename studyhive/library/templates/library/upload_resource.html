@@ -51,4 +51,18 @@
         <button type="submit" class="btn btn-primary">Upload</button>
     </form>
 </div>
+<script>
+    document.getElementById("id_resource_type").addEventListener("change", function() {
+        var fileInput = document.getElementById("id_file");
+        var videoUrlInput = document.getElementById("id_video_url");
+        
+        if (this.value === 'Video') {
+            fileInput.disabled = true;
+            videoUrlInput.disabled = false;
+        } else {
+            fileInput.disabled = false;
+            videoUrlInput.disabled = true;
+        }
+    });
+    </script>
 {% endblock %}

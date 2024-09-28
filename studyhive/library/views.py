@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User 
 from django import forms
 from django.db.models import Avg
-from .models import Resource, Tag, Subject, Download, View, Profile, Rating, Comment
+from .models import Resource, Tag, Subject, Download, View, Profile, Rating, Comment, Bookmark
 from django.contrib import messages
 from django.db.models import F
 
@@ -51,7 +51,6 @@ class ResourceForm(forms.ModelForm):
             'description': forms.Textarea(attrs={'rows': 3}),
             'file': forms.FileInput(),
             'video_url': forms.URLInput(),
-            'tags': forms.CheckboxSelectMultiple(),
         }
 
     def __init__(self, *args, **kwargs):
@@ -61,6 +60,7 @@ class ResourceForm(forms.ModelForm):
         self.fields['subject'].queryset = Subject.objects.all()
 
         self.fields['tags'].required = False
+
 
     def clean(self):
         cleaned_data = super().clean()
@@ -279,3 +279,25 @@ def resource_detail(request, resource_id):
         'user_rating': user_rating,
     }
     return render(request, 'library/resource_detail.html', context)
+
+
+@login_required
+def add_bookmark(request, resource_id):
+    resource = get_object_or_404(Resource, id=resource_id)
+    Bookmark.objects.get_or_create(user=request.user, resource=resource)
+    return redirect('resource_detail', resource_id=resource.id)
+
+
+@login_required
+def remove_bookmark(request, resource_id):
+    resource = get_object_or_404(Resource, id=resource_id)
+    Bookmark.objects.filter(user=request.user, resource=resource).delete()
+    return redirect('resource_detail', resource_id=resource.id)
+
+@login_required
+def bookmarks_list(request):
+    bookmarks = Bookmark.objects.filter(user=request.user).select_related('resource')
+    context = {
+        'bookmarks': bookmarks,
+    }
+    return render(request, 'library/bookmarks_list.html', context)

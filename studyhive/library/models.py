@@ -64,6 +64,7 @@ class Resource(models.Model):
     downloads_count = models.IntegerField(default=0)
     average_rating = models.FloatField(default=0.0)
     total_ratings = models.IntegerField(default=0)
+    bookmarks = models.ManyToManyField(User, through='Bookmark', related_name='bookmarked_resources')
     is_active = models.BooleanField(default=True)
     tags = models.ManyToManyField(Tag, through='ResourceTag', related_name='resources')
 
@@ -83,15 +84,7 @@ class Resource(models.Model):
             raise ValidationError('Resource type must be "Video" when a video URL is provided.')
 
     class Meta:
-        constraints = [
-            models.CheckConstraint(
-                check=(
-                    (models.Q(file__isnull=False) & models.Q(video_url__isnull=True) & models.Q(resource_type='Document')) |
-                    (models.Q(file__isnull=True) & models.Q(video_url__isnull=False) & models.Q(resource_type='Video'))
-                ),
-                name='resource_file_or_video_url',
-            )
-        ]
+        pass
 
 # Through model for Resource-Tag many-to-many relationship
 class ResourceTag(models.Model):
