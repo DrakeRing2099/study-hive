@@ -1,0 +1,54 @@
+{% extends 'library/layout.html' %}
+
+{% block title %}Upload Resource - E-Library{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Upload Resource</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <div class="form-group">
+            {{ form.title.label_tag }}
+            {{ form.title }}
+            {{ form.title.errors }}
+        </div>
+        <div class="form-group">
+            {{ form.description.label_tag }}
+            {{ form.description }}
+            {{ form.description.errors }}
+        </div>
+        <div class="form-group">
+            {{ form.resource_type.label_tag }}
+            {{ form.resource_type }}
+            {{ form.resource_type.errors }}
+        </div>
+        <div class="form-group">
+            {{ form.file_type.label_tag }}
+            {{ form.file_type }}
+            {{ form.file_type.errors }}
+        </div>
+        <div class="form-group">
+            {{ form.file.label_tag }}
+            {{ form.file }}
+            {{ form.file.errors }}
+        </div>
+        <div class="form-group">
+            {{ form.video_url.label_tag }}
+            {{ form.video_url }}
+            {{ form.video_url.errors }}
+        </div>
+        <div class="form-group">
+            {{ form.subject.label_tag }}
+            {{ form.subject }}
+            {{ form.subject.errors }}
+        </div>
+        <div class="form-group">
+            {{ form.tags.label_tag }}
+            {{ form.tags }}
+            {{ form.tags.errors }}
+        </div>
+        <button type="submit" class="btn btn-primary">Upload</button>
+    </form>
+</div>
+{% endblock %}
