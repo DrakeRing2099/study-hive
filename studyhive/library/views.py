@@ -35,6 +35,8 @@ class RegistrationForm(forms.ModelForm):
 
 
 class ResourceForm(forms.ModelForm):
+    
+    tags = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Enter tags separated by commas'}), required=False)
     class Meta:
         model = Resource
         fields = [
@@ -61,6 +63,15 @@ class ResourceForm(forms.ModelForm):
 
         self.fields['tags'].required = False
 
+
+    def clean_tags(self):
+        tags = self.cleaned_data.get('tags')
+        if tags:
+            # Split the comma-separated string into a list of tag names
+            tag_list = [tag.strip() for tag in tags.split(',')]
+            return tag_list
+        return []
+    
 
     def clean(self):
         cleaned_data = super().clean()
@@ -167,7 +178,13 @@ def upload_resource(request):
             resource = form.save(commit=False)
             resource.uploader = request.user
             resource.save()
-            form.save_m2m()  # Save the many-to-many data for tags
+            # Handle tags
+            tags = form.cleaned_data.get('tags')
+            if tags:
+                resource.tags.clear()
+                for tag_name in tags:
+                    tag, created = Tag.objects.get_or_create(name=tag_name)
+                    resource.tags.add(tag)
             return redirect('resource_detail', resource_id=resource.id)
         else:
             # Form is invalid; render the form with errors
@@ -301,3 +318,12 @@ def bookmarks_list(request):
         'bookmarks': bookmarks,
     }
     return render(request, 'library/bookmarks_list.html', context)
+
+def tag_resources(request, tag_id):
+    tag = get_object_or_404(Tag, id=tag_id)
+    resources = Resource.objects.filter(tags=tag, is_active=True).order_by('-upload_date')
+    context = {
+        'tag': tag,
+        'resources': resources,
+    }
+    return render(request, 'library/tag_resources.html', context)

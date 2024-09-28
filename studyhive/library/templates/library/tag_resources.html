@@ -1,0 +1,21 @@
+{% extends 'library/layout.html' %}
+
+{% block title %}Resources Tagged "{{ tag.name }}" - E-Library{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Resources Tagged "{{ tag.name }}"</h2>
+    {% if resources %}
+        <ul class="list-group">
+            {% for resource in resources %}
+                <li class="list-group-item">
+                    <a href="{% url 'resource_detail' resource_id=resource.id %}">{{ resource.title }}</a>
+                    <span class="text-muted">Uploaded by {{ resource.uploader.username }} on {{ resource.upload_date|date:"M d, Y" }}</span>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No resources found with this tag.</p>
+    {% endif %}
+</div>
+{% endblock %}
