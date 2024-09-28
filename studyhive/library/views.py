@@ -1,12 +1,12 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import HttpResponse, HttpResponseRedirect, render, redirect
+from django.shortcuts import HttpResponse, HttpResponseRedirect, render, redirect, get_object_or_404
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User 
 from django import forms
-from .models import Resource, Tag, Subject
+from .models import Resource, Tag, Subject, Download, View
 
 class RegistrationForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput)
@@ -140,3 +140,30 @@ def upload_resource(request):
         form = ResourceForm()
     return render(request, 'library/upload_resource.html', {'form': form})
 
+
+@login_required
+def profile_view(request, username=None):
+    if username:
+        # Viewing another user's profile
+        user = get_object_or_404(User, username=username)
+        is_own_profile = user == request.user
+    else:
+        # Viewing own profile
+        user = request.user
+        is_own_profile = True
+
+    # Get uploaded resources
+    uploaded_resources = Resource.objects.filter(uploader=user)
+
+    # Get activity history (Downloads and Views)
+    downloads = Download.objects.filter(user=user)
+    views = View.objects.filter(user=user)
+
+    context = {
+        'profile_user': user,
+        'is_own_profile': is_own_profile,
+        'uploaded_resources': uploaded_resources,
+        'downloads': downloads,
+        'views': views,
+    }
+    return render(request, 'library/profile.html', context)
