@@ -13,7 +13,7 @@
     <p>{{ profile_user.profile.bio }}</p>
 
     {% if is_own_profile %}
-        <a href="" class="btn btn-secondary">Edit Profile</a>
+        <a href="{% url 'edit_profile' %}" class="btn btn-secondary">Edit Profile</a>
     {% endif %}
 
     <hr>

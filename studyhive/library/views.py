@@ -6,7 +6,16 @@ from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User 
 from django import forms
-from .models import Resource, Tag, Subject, Download, View
+from django.db.models import Avg
+from .models import Resource, Tag, Subject, Download, View, Profile, Rating, Comment
+from django.contrib import messages
+from django.db.models import F
+
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['bio', 'avatar']
 
 class RegistrationForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput)
@@ -51,6 +60,8 @@ class ResourceForm(forms.ModelForm):
         self.fields['tags'].queryset = Tag.objects.all()
         self.fields['subject'].queryset = Subject.objects.all()
 
+        self.fields['tags'].required = False
+
     def clean(self):
         cleaned_data = super().clean()
         file = cleaned_data.get('file')
@@ -70,6 +81,25 @@ class ResourceForm(forms.ModelForm):
             raise forms.ValidationError('Resource type must be "Video" when a video URL is provided.')
 
         return cleaned_data
+
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['comment_text']
+        widgets = {
+            'comment_text': forms.Textarea(attrs={'rows': 3}),
+        }
+
+
+class RatingForm(forms.ModelForm):
+    class Meta:
+        model = Rating
+        fields = ['rating']
+        widgets = {
+            'rating': forms.RadioSelect(choices=[(i, str(i)) for i in range(1, 6)]),
+        }
+
 
 
 def index(request):
@@ -167,3 +197,79 @@ def profile_view(request, username=None):
         'views': views,
     }
     return render(request, 'library/profile.html', context)
+
+
+@login_required
+def edit_profile(request):
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, request.FILES, instance=request.user.profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your profile was successfully updated!')
+            return redirect('profile')
+    else:
+        form = ProfileForm(instance=request.user.profile)
+    return render(request, 'library/edit_profile.html', {'form': form})
+
+
+def resource_detail(request, resource_id):
+    resource = get_object_or_404(Resource, id=resource_id, is_active=True)
+    
+    # Record the view if the user is authenticated
+    if request.user.is_authenticated:
+        View.objects.get_or_create(user=request.user, resource=resource)
+    
+    # Update views count
+    resource.views_count = F('views_count') + 1
+    resource.save(update_fields=['views_count'])
+    
+    # Retrieve comments and ratings
+    comments = Comment.objects.filter(resource=resource).select_related('user').order_by('-comment_date')
+    average_rating = Rating.objects.filter(resource=resource).aggregate(Avg('rating'))['rating__avg'] or 0
+    total_ratings = Rating.objects.filter(resource=resource).count()
+    
+    # Handle comment submission
+    if request.method == 'POST' and 'comment_form' in request.POST:
+        comment_form = CommentForm(request.POST)
+        if comment_form.is_valid():
+            comment = comment_form.save(commit=False)
+            comment.user = request.user
+            comment.resource = resource
+            comment.save()
+            messages.success(request, 'Your comment has been posted.')
+            return redirect('resource_detail', resource_id=resource.id)
+    else:
+        comment_form = CommentForm()
+    
+    # Handle rating submission
+    if request.method == 'POST' and 'rating_form' in request.POST:
+        rating_form = RatingForm(request.POST)
+        if rating_form.is_valid():
+            rating, created = Rating.objects.update_or_create(
+                user=request.user,
+                resource=resource,
+                defaults={'rating': rating_form.cleaned_data['rating']}
+            )
+            messages.success(request, 'Your rating has been submitted.')
+            return redirect('resource_detail', resource_id=resource.id)
+    else:
+        rating_form = RatingForm()
+    
+    # Check if the user has already rated
+    user_rating = None
+    if request.user.is_authenticated:
+        try:
+            user_rating = Rating.objects.get(user=request.user, resource=resource).rating
+        except Rating.DoesNotExist:
+            pass
+    
+    context = {
+        'resource': resource,
+        'comments': comments,
+        'comment_form': comment_form,
+        'rating_form': rating_form,
+        'average_rating': round(average_rating, 1),
+        'total_ratings': total_ratings,
+        'user_rating': user_rating,
+    }
+    return render(request, 'library/resource_detail.html', context)
