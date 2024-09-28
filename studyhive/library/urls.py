@@ -16,5 +16,5 @@ urlpatterns = [
     path('bookmarks/', views.bookmarks_list, name='bookmarks_list'),
     path('tag/<int:tag_id>/', views.tag_resources, name='tag_resources'),
     path('recommendations/', views.recommendations_view, name='recommendations'),
-
+    path('search/', views.search_resources, name='search_resources'),
 ]

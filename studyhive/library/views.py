@@ -390,3 +390,20 @@ def recommendations_view(request):
         'recommendations': recommendations,
     }
     return render(request, 'library/recommendations.html', context)
+
+def search_resources(request):
+    query = request.GET.get('q')
+    resources = Resource.objects.filter(is_active=True)
+    
+    if query:
+        resources = resources.filter(
+            Q(title__icontains=query) |
+            Q(description__icontains=query) |
+            Q(tags__name__icontains=query)
+        ).distinct()
+    
+    context = {
+        'resources': resources,
+        'query': query,
+    }
+    return render(request, 'library/search_results.html', context)
