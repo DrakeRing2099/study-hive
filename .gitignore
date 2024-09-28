@@ -1,3 +1,12 @@
 # Ignore virtual environment
 
 venv/
+
+# Ignore SQLite database
+db.sqlite3
+
+# Ignore Django migrations
+*/migrations/*
+
+# Ignore media uploads
+/media/
