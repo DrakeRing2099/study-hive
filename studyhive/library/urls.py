@@ -15,5 +15,6 @@ urlpatterns = [
     path('resource/<int:resource_id>/unbookmark/', views.remove_bookmark, name='remove_bookmark'),
     path('bookmarks/', views.bookmarks_list, name='bookmarks_list'),
     path('tag/<int:tag_id>/', views.tag_resources, name='tag_resources'),
-    
+    path('recommendations/', views.recommendations_view, name='recommendations'),
+
 ]

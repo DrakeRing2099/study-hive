@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User 
 from django import forms
-from django.db.models import Avg
+from django.db.models import Avg, Q
 from .models import Resource, Tag, Subject, Download, View, Profile, Rating, Comment, Bookmark
 from django.contrib import messages
 from django.db.models import F
@@ -327,3 +327,66 @@ def tag_resources(request, tag_id):
         'resources': resources,
     }
     return render(request, 'library/tag_resources.html', context)
+
+
+# Recommendations implementation
+
+def get_popular_resources():
+    # Top resources based on views, downloads, and ratings
+    popular_by_views = Resource.objects.filter(is_active=True).order_by('-views_count')[:10]
+    popular_by_downloads = Resource.objects.filter(is_active=True).order_by('-downloads_count')[:10]
+    popular_by_ratings = Resource.objects.filter(is_active=True).annotate(avg_rating=Avg('ratings__rating')).order_by('-avg_rating')[:10]
+
+    # Combine and remove duplicates while preserving order
+    popular_resources = list(dict.fromkeys(list(popular_by_views) + list(popular_by_downloads) + list(popular_by_ratings)))
+    return popular_resources[:10]
+
+def get_recent_resources():
+    recent_resources = Resource.objects.filter(is_active=True).order_by('-upload_date')[:10]
+    return recent_resources
+
+def get_user_activity_recommendations(user):
+    # Get resources the user has interacted with
+    user_resources = Resource.objects.filter(
+        Q(views__user=user) | Q(downloads__user=user) | Q(ratings__user=user)
+    ).distinct()
+
+    # Get tags and subjects from these resources
+    user_tags = Tag.objects.filter(resources__in=user_resources).distinct()
+    user_subjects = Subject.objects.filter(resources__in=user_resources).distinct()
+
+    # Get resources matching these tags and subjects
+    recommended_resources = Resource.objects.filter(
+        (Q(tags__in=user_tags) | Q(subject__in=user_subjects)),
+        is_active=True
+    ).exclude(
+        id__in=user_resources.values_list('id', flat=True)
+    ).distinct().order_by('-views_count')[:10]
+
+    return recommended_resources
+
+
+def get_combined_recommendations(user):
+    recommendations = []
+
+    # Get recommendations from different methods
+    popular_resources = get_popular_resources()
+    recent_resources = get_recent_resources()
+    activity_based_resources = get_user_activity_recommendations(user)
+    
+    # Combine and prioritize recommendations
+    combined_list = list(dict.fromkeys(
+        list(activity_based_resources) + 
+        list(popular_resources) + 
+        list(recent_resources)
+    ))
+
+    return combined_list[:10]
+
+@login_required
+def recommendations_view(request):
+    recommendations = get_combined_recommendations(request.user)
+    context = {
+        'recommendations': recommendations,
+    }
+    return render(request, 'library/recommendations.html', context)

@@ -1,0 +1,31 @@
+{% extends 'library/layout.html' %}
+
+{% block title %}Recommendations - E-Library{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Recommended for You</h2>
+    {% if recommendations %}
+        <div class="row">
+            {% for resource in recommendations %}
+                <div class="col-md-4">
+                    <div class="card mb-3">
+                        {% if resource.resource_type == 'Video' %}
+                            <!-- Embed video thumbnail if available -->
+                        {% elif resource.resource_type == 'Document' %}
+                            <!-- Display document icon or thumbnail -->
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ resource.title }}</h5>
+                            <p class="card-text">{{ resource.description|truncatewords:20 }}</p>
+                            <a href="{% url 'resource_detail' resource_id=resource.id %}" class="btn btn-primary">View Resource</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No recommendations available at this time.</p>
+    {% endif %}
+</div>
+{% endblock %}
