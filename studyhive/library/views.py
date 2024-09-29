@@ -429,3 +429,13 @@ def search_resources(request):
         'file_types': [ft[0] for ft in file_types],  # Extract file type names
     }
     return render(request, 'library/search_results.html', context)
+
+def subject_resources(request, subject_id):
+    subject = get_object_or_404(Subject, id=subject_id)
+    resources = Resource.objects.filter(subject=subject, is_active=True)
+
+    context = {
+        'subject': subject,
+        'resources': resources,
+    }
+    return render(request, 'library/subject_resources.html', context)

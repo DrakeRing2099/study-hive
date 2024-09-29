@@ -46,18 +46,21 @@
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'index' %}">Resources</a>
             </li>
+        </ul>
+
+        <!-- Right-aligned links -->
+        <ul class="navbar-nav">
+            {% if user.is_authenticated %}
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'upload_resource' %}">Upload</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'recommendations' %}">Recommendations</a>
             </li>
-        </ul>
-
-        <!-- Right-aligned links -->
-        <ul class="navbar-nav">
-            {% if user.is_authenticated %}
-                <li class="nav-item d-flex align-items-center">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'bookmarks_list' %}">Bookmarks</a>
+            </li>    
+            <li class="nav-item d-flex align-items-center" style="">
                     <!-- Display user's avatar if available -->
                     {% if user.profile.avatar %}
                         <img src="{{ user.profile.avatar.url }}" alt="{{ user.username }}'s avatar" class="rounded-circle mr-2" width="40" height="40">
@@ -65,9 +68,6 @@
                         <img src="{% static 'library/img/default_avatar.png' %}" alt="{{ user.username }}'s avatar" class="rounded-circle mr-2" width="40" height="40">
                     {% endif %}
                     <a class="nav-link" href="{% url 'user_profile' username=user.username %}">{{ user.username }}</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'bookmarks_list' %}">Bookmarks</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'logout' %}">Logout</a>
