@@ -1,54 +1,86 @@
 {% extends 'library/layout.html' %}
+{% load static %}
+{% load form_tags %}
 
 {% block title %}Upload Resource - E-Library{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h2>Upload Resource</h2>
-    <form method="post" enctype="multipart/form-data">
+<div class="container mt-5">
+    <h2 class="mb-4 text-yellow">Upload Resource</h2>
+    <form method="post" enctype="multipart/form-data" class="bg-dark-gray p-4 rounded shadow">
         {% csrf_token %}
         {{ form.non_field_errors }}
+        <!-- Title Field -->
         <div class="form-group">
             {{ form.title.label_tag }}
-            {{ form.title }}
+            {{ form.title|add_class:"form-control bg-gray text-white" }}
             {{ form.title.errors }}
         </div>
+        <!-- Description Field -->
         <div class="form-group">
             {{ form.description.label_tag }}
-            {{ form.description }}
+            {{ form.description|add_class:"form-control bg-gray text-white" }}
             {{ form.description.errors }}
         </div>
+        <!-- Resource Type Field -->
         <div class="form-group">
             {{ form.resource_type.label_tag }}
-            {{ form.resource_type }}
+            {{ form.resource_type|add_class:"form-control bg-gray text-white" }}
             {{ form.resource_type.errors }}
         </div>
+        <!-- File Type Field -->
         <div class="form-group">
             {{ form.file_type.label_tag }}
-            {{ form.file_type }}
+            {{ form.file_type|add_class:"form-control bg-gray text-white" }}
             {{ form.file_type.errors }}
         </div>
+        <!-- File Field -->
         <div class="form-group">
             {{ form.file.label_tag }}
-            {{ form.file }}
+            {{ form.file|add_class:"form-control-file text-white" }}
             {{ form.file.errors }}
         </div>
+        <!-- Video URL Field -->
         <div class="form-group">
             {{ form.video_url.label_tag }}
-            {{ form.video_url }}
+            {{ form.video_url|add_class:"form-control bg-gray text-white" }}
             {{ form.video_url.errors }}
         </div>
+        <!-- Subject Field -->
         <div class="form-group">
             {{ form.subject.label_tag }}
-            {{ form.subject }}
+            {{ form.subject|add_class:"form-control bg-gray text-white" }}
             {{ form.subject.errors }}
         </div>
+        <!-- Tags Field -->
         <div class="form-group">
             {{ form.tags.label_tag }}
-            {{ form.tags }}
+            {{ form.tags|add_class:"form-control bg-gray text-white" }}
             {{ form.tags.errors }}
         </div>
-        <button type="submit" class="btn btn-primary">Upload</button>
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-yellow btn-block mt-4">Upload</button>
     </form>
 </div>
+
+<!-- JavaScript to Toggle File and Video URL Fields -->
+<script>
+    function toggleFields() {
+        var resourceType = document.getElementById("id_resource_type").value;
+        var fileInput = document.getElementById("id_file").parentElement;
+        var videoUrlInput = document.getElementById("id_video_url").parentElement;
+
+        if (resourceType === 'Video') {
+            fileInput.style.display = 'none';
+            videoUrlInput.style.display = 'block';
+        } else {
+            fileInput.style.display = 'block';
+            videoUrlInput.style.display = 'none';
+        }
+    }
+
+    document.getElementById("id_resource_type").addEventListener("change", toggleFields);
+    // Initialize on page load
+    window.onload = toggleFields;
+</script>
 {% endblock %}

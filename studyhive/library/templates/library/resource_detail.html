@@ -1,82 +1,130 @@
 {% extends 'library/layout.html' %}
+{% load static %}
 {% load youtube_filters %}
 
 {% block title %}{{ resource.title }} - E-Library{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h2>{{ resource.title }}</h2>
-    <p class="text-muted">Uploaded by <a href="{% url 'user_profile' username=resource.uploader.username %}">{{ resource.uploader.username }}</a> on {{ resource.upload_date|date:"M d, Y" }}</p>
-    
-    {% if resource.resource_type == 'Document' %}
-        <a href="{{ resource.file.url }}" class="btn btn-primary mb-3">Download File</a>
-    {% elif resource.resource_type == 'Video' %}
-        <!-- Embed YouTube video -->
-        <div class="embed-responsive embed-responsive-16by9 mb-3">
-            <iframe class="embed-responsive-item" src="{{ resource.video_url|youtube_embed_url }}" allowfullscreen></iframe>
-        </div>
-    {% endif %}
-    
-    <p>{{ resource.description }}</p>
-    
-    <!-- Display Tags -->
-    {% if resource.tags.exists %}
-        <p><strong>Tags:</strong>
-        {% for tag in resource.tags.all %}
-            <a href="{% url 'tag_resources' tag_id=tag.id %}" class="badge badge-info">{{ tag.name }}</a>
-        {% endfor %}
-        </p>
-    {% endif %}
-    
-    <!-- Display Subject -->
-    {% if resource.subject %}
-        <p><strong>Subject:</strong> <a href="{% url 'subject_resources' subject_id=resource.subject.id %}">{{ resource.subject.name }}</a></p>
-    {% endif %}
-    
-    <!-- Ratings -->
-    <h4>Rating</h4>
-    <p>Average Rating: {{ average_rating }} / 5 ({{ total_ratings }} ratings)</p>
-    {% if user.is_authenticated %}
-        {% if user_rating %}
-            <p>Your Rating: {{ user_rating }} / 5</p>
-        {% else %}
-            <form method="post">
-                {% csrf_token %}
-                {{ rating_form.as_p }}
-                <button type="submit" name="rating_form" class="btn btn-success">Submit Rating</button>
-            </form>
-        {% endif %}
-    {% else %}
-        <p><a href="{% url 'login' %}">Log in</a> to rate this resource.</p>
-    {% endif %}
-    
-    <!-- Comments -->
-    <h4>Comments</h4>
-    {% if comments %}
-        {% for comment in comments %}
-            <div class="media mb-3">
-                <img src="{% if comment.user.profile.avatar %}{{ comment.user.profile.avatar.url }}{% else %}https://via.placeholder.com/64{% endif %}" class="mr-3 rounded-circle" alt="{{ comment.user.username }}" width="64" height="64">
-
-                <div class="media-body">
-                    <h5 class="mt-0">{{ comment.user.username }}</h5>
-                    <p>{{ comment.comment_text }}</p>
-                    <small class="text-muted">{{ comment.comment_date|date:"M d, Y H:i" }}</small>
-                </div>
+<div class="container mt-5">
+    <div class="card bg-dark-gray text-white shadow-sm">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="card-title text-yellow">{{ resource.title }}</h2>
+                {% if user.is_authenticated %}
+                    {% if resource in user.bookmarked_resources.all %}
+                        <a href="{% url 'remove_bookmark' resource_id=resource.id %}" class="btn btn-danger ml-3">
+                            <i class="fas fa-bookmark"></i> Remove Bookmark
+                        </a>
+                    {% else %}
+                        <a href="{% url 'add_bookmark' resource_id=resource.id %}" class="btn btn-success">
+                            <i class="far fa-bookmark"></i> Add Bookmark
+                        </a>
+                    {% endif %}
+                {% endif %}
             </div>
-        {% endfor %}
-    {% else %}
-        <p>No comments yet.</p>
-    {% endif %}
-    
-    {% if user.is_authenticated %}
-        <h5>Leave a Comment</h5>
-        <form method="post">
-            {% csrf_token %}
-            {{ comment_form.as_p }}
-            <button type="submit" name="comment_form" class="btn btn-primary">Post Comment</button>
-        </form>
-    {% else %}
-        <p><a href="{% url 'login' %}">Log in</a> to post a comment.</p>
-    {% endif %}
+            
+            <p class="text-muted">Uploaded by 
+                <a href="{% url 'user_profile' username=resource.uploader.username %}" class="text-yellow">
+                    {{ resource.uploader.username }}
+                </a> 
+                on {{ resource.upload_date|date:"M d, Y" }}
+            </p>
+
+            <!-- Resource Content -->
+            {% if resource.resource_type == 'Document' %}
+                <div class="mb-4">
+                    <a href="{{ resource.file.url }}" class="btn btn-download">
+                        <i class="fas fa-download"></i> Download File
+                    </a>
+                </div>
+            {% elif resource.resource_type == 'Video' %}
+                <div class="embed-responsive embed-responsive-16by9 mb-4">
+                    <iframe class="embed-responsive-item" src="{{ resource.video_url|youtube_embed_url }}" allowfullscreen></iframe>
+                </div>
+            {% endif %}
+
+            <!-- Description -->
+            <p>{{ resource.description }}</p>
+
+            <!-- Tags -->
+            {% if resource.tags.exists %}
+                <p><strong>Tags:</strong>
+                {% for tag in resource.tags.all %}
+                    <a href="{% url 'tag_resources' tag_id=tag.id %}" class="badge badge-yellow">{{ tag.name }}</a>
+                {% endfor %}
+                </p>
+            {% endif %}
+
+            <!-- Subject -->
+            {% if resource.subject %}
+                <p><strong>Subject:</strong> 
+                    <a href="{% url 'subject_resources' subject_id=resource.subject.id %}" class="text-yellow">
+                        {{ resource.subject.name }}
+                    </a>
+                </p>
+            {% endif %}
+
+            <!-- Ratings -->
+            <hr class="bg-secondary">
+            <h4>Rating</h4>
+            <p>Average Rating: <span class="text-yellow">{{ average_rating }} / 5</span> ({{ total_ratings }} ratings)</p>
+            {% if user.is_authenticated %}
+                {% if user_rating %}
+                    <p>Your Rating: <span class="text-yellow">{{ user_rating }} / 5</span></p>
+                {% else %}
+                <form method="post" class="mb-4">
+                    {% csrf_token %}
+                    <div class="form-group d-flex align-items-center">
+                        <label class="mr-3">Rating:</label>
+                        <div class="d-flex">
+                            {% for radio in rating_form.rating %}
+                            <div class="mr-2">
+                                {{ radio.tag }}
+                                <label for="{{ radio.id_for_label }}" class="mr-3">{{ radio.choice_label }}</label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <button type="submit" name="rating_form" class="btn btn-success ml-3">
+                            <i class="fas fa-star"></i> Submit Rating
+                        </button>
+                    </div>
+                </form>
+                {% endif %}
+            {% else %}
+                <p><a href="{% url 'login' %}" class="text-yellow">Log in</a> to rate this resource.</p>
+            {% endif %}
+
+            <!-- Comments -->
+            <hr class="bg-secondary">
+            <h4>Comments</h4>
+            {% if comments %}
+                {% for comment in comments %}
+                    <div class="media mb-4">
+                        <img src="{% if comment.user.profile.avatar %}{{ comment.user.profile.avatar.url }}{% else %}{% static 'library/img/default_avatar.png' %}{% endif %}" class="mr-3 rounded-circle" alt="{{ comment.user.username }}" width="64" height="64">
+                        <div class="media-body">
+                            <h5 class="mt-0 text-yellow">{{ comment.user.username }}</h5>
+                            <p>{{ comment.comment_text }}</p>
+                            <small class="text-muted">{{ comment.comment_date|date:"M d, Y H:i" }}</small>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No comments yet.</p>
+            {% endif %}
+
+            {% if user.is_authenticated %}
+                <h5>Leave a Comment</h5>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ comment_form.as_p }}
+                    <button type="submit" name="comment_form" class="btn btn-success">
+                        <i class="fas fa-comment"></i> Post Comment
+                    </button>
+                </form>
+            {% else %}
+                <p><a href="{% url 'login' %}" class="text-yellow">Log in</a> to post a comment.</p>
+            {% endif %}
+        </div>
+    </div>
 </div>
 {% endblock %}

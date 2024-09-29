@@ -6,8 +6,8 @@ from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User 
 from django import forms
-from django.db.models import Avg
-from .models import Resource, Tag, Subject, Download, View, Profile, Rating, Comment
+from django.db.models import Avg, Q
+from .models import Resource, Tag, Subject, Download, View, Profile, Rating, Comment, Bookmark
 from django.contrib import messages
 from django.db.models import F
 
@@ -35,6 +35,8 @@ class RegistrationForm(forms.ModelForm):
 
 
 class ResourceForm(forms.ModelForm):
+    
+    tags = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Enter tags separated by commas'}), required=False)
     class Meta:
         model = Resource
         fields = [
@@ -51,7 +53,6 @@ class ResourceForm(forms.ModelForm):
             'description': forms.Textarea(attrs={'rows': 3}),
             'file': forms.FileInput(),
             'video_url': forms.URLInput(),
-            'tags': forms.CheckboxSelectMultiple(),
         }
 
     def __init__(self, *args, **kwargs):
@@ -61,6 +62,16 @@ class ResourceForm(forms.ModelForm):
         self.fields['subject'].queryset = Subject.objects.all()
 
         self.fields['tags'].required = False
+
+
+    def clean_tags(self):
+        tags = self.cleaned_data.get('tags')
+        if tags:
+            # Split the comma-separated string into a list of tag names
+            tag_list = [tag.strip() for tag in tags.split(',')]
+            return tag_list
+        return []
+    
 
     def clean(self):
         cleaned_data = super().clean()
@@ -106,7 +117,13 @@ def index(request):
 
     # Authenticated users view their inbox
     if request.user.is_authenticated:
-        return render(request, "library/index.html")
+        popular_resources = Resource.objects.filter(is_active=True).order_by('-views_count')[:10]
+        recent_resources = Resource.objects.filter(is_active=True).order_by('-upload_date')[:10]
+        context = {
+        'popular_resources': popular_resources,
+        'recent_resources': recent_resources,
+        }
+        return render(request, 'library/index.html', context)
 
     # Everyone else is prompted to sign in
     else:
@@ -161,7 +178,13 @@ def upload_resource(request):
             resource = form.save(commit=False)
             resource.uploader = request.user
             resource.save()
-            form.save_m2m()  # Save the many-to-many data for tags
+            # Handle tags
+            tags = form.cleaned_data.get('tags')
+            if tags:
+                resource.tags.clear()
+                for tag_name in tags:
+                    tag, created = Tag.objects.get_or_create(name=tag_name)
+                    resource.tags.add(tag)
             return redirect('resource_detail', resource_id=resource.id)
         else:
             # Form is invalid; render the form with errors
@@ -273,3 +296,136 @@ def resource_detail(request, resource_id):
         'user_rating': user_rating,
     }
     return render(request, 'library/resource_detail.html', context)
+
+
+@login_required
+def add_bookmark(request, resource_id):
+    resource = get_object_or_404(Resource, id=resource_id)
+    Bookmark.objects.get_or_create(user=request.user, resource=resource)
+    return redirect('resource_detail', resource_id=resource.id)
+
+
+@login_required
+def remove_bookmark(request, resource_id):
+    resource = get_object_or_404(Resource, id=resource_id)
+    Bookmark.objects.filter(user=request.user, resource=resource).delete()
+    return redirect('resource_detail', resource_id=resource.id)
+
+@login_required
+def bookmarks_list(request):
+    bookmarks = Bookmark.objects.filter(user=request.user).select_related('resource')
+    context = {
+        'bookmarks': bookmarks,
+    }
+    return render(request, 'library/bookmarks_list.html', context)
+
+def tag_resources(request, tag_id):
+    tag = get_object_or_404(Tag, id=tag_id)
+    resources = Resource.objects.filter(tags=tag, is_active=True).order_by('-upload_date')
+    context = {
+        'tag': tag,
+        'resources': resources,
+    }
+    return render(request, 'library/tag_resources.html', context)
+
+
+# Recommendations implementation
+
+def get_popular_resources():
+    # Top resources based on views, downloads, and ratings
+    popular_by_views = Resource.objects.filter(is_active=True).order_by('-views_count')[:10]
+    popular_by_downloads = Resource.objects.filter(is_active=True).order_by('-downloads_count')[:10]
+    popular_by_ratings = Resource.objects.filter(is_active=True).annotate(avg_rating=Avg('ratings__rating')).order_by('-avg_rating')[:10]
+
+    # Combine and remove duplicates while preserving order
+    popular_resources = list(dict.fromkeys(list(popular_by_views) + list(popular_by_downloads) + list(popular_by_ratings)))
+    return popular_resources[:10]
+
+def get_recent_resources():
+    recent_resources = Resource.objects.filter(is_active=True).order_by('-upload_date')[:10]
+    return recent_resources
+
+def get_user_activity_recommendations(user):
+    # Get resources the user has interacted with
+    user_resources = Resource.objects.filter(
+        Q(views__user=user) | Q(downloads__user=user) | Q(ratings__user=user)
+    ).distinct()
+
+    # Get tags and subjects from these resources
+    user_tags = Tag.objects.filter(resources__in=user_resources).distinct()
+    user_subjects = Subject.objects.filter(resources__in=user_resources).distinct()
+
+    # Get resources matching these tags and subjects
+    recommended_resources = Resource.objects.filter(
+        (Q(tags__in=user_tags) | Q(subject__in=user_subjects)),
+        is_active=True
+    ).exclude(
+        id__in=user_resources.values_list('id', flat=True)
+    ).distinct().order_by('-views_count')[:10]
+
+    return recommended_resources
+
+
+def get_combined_recommendations(user):
+    recommendations = []
+
+    # Get recommendations from different methods
+    popular_resources = get_popular_resources()
+    recent_resources = get_recent_resources()
+    activity_based_resources = get_user_activity_recommendations(user)
+    
+    # Combine and prioritize recommendations
+    combined_list = list(dict.fromkeys(
+        list(activity_based_resources) + 
+        list(popular_resources) + 
+        list(recent_resources)
+    ))
+
+    return combined_list[:10]
+
+@login_required
+def recommendations_view(request):
+    recommendations = get_combined_recommendations(request.user)
+    context = {
+        'recommendations': recommendations,
+    }
+    return render(request, 'library/recommendations.html', context)
+
+
+def search_resources(request):
+    query = request.GET.get('q')
+    resources = Resource.objects.filter(is_active=True)
+    
+    if query:
+        resources = resources.filter(
+            Q(title__icontains=query) |
+            Q(description__icontains=query) |
+            Q(tags__name__icontains=query)
+        ).distinct()
+    
+    # Filtering by subject
+    subject_id = request.GET.get('subject')
+    if subject_id:
+        resources = resources.filter(subject__id=subject_id)
+    
+    # Filtering by resource type
+    resource_type = request.GET.get('resource_type')
+    if resource_type:
+        resources = resources.filter(resource_type=resource_type)
+    
+    # Filtering by file type
+    file_type = request.GET.get('file_type')
+    if file_type:
+        resources = resources.filter(file_type=file_type)
+    
+    # Get all subjects and file types for filter options
+    subjects = Subject.objects.all()
+    file_types = Resource.FILE_TYPE_CHOICES  # Assuming you have this in your model
+    
+    context = {
+        'resources': resources,
+        'query': query,
+        'subjects': subjects,
+        'file_types': [ft[0] for ft in file_types],  # Extract file type names
+    }
+    return render(request, 'library/search_results.html', context)

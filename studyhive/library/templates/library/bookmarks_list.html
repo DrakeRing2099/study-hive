@@ -1,0 +1,21 @@
+{% extends 'library/layout.html' %}
+
+{% block title %}My Bookmarks - E-Library{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-yellow">My Bookmarked Resources</h2>
+    {% if bookmarks %}
+        <div class="list-group">
+            {% for bookmark in bookmarks %}
+                <a href="{% url 'resource_detail' resource_id=bookmark.resource.id %}" class="list-group-item list-group-item-action bg-dark-gray text-white d-flex justify-content-between align-items-center">
+                    <span>{{ bookmark.resource.title }}</span>
+                    <small class="text-muted">{{ bookmark.bookmark_date|date:"M d, Y" }}</small>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-white">You have not bookmarked any resources yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

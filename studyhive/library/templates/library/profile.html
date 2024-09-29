@@ -1,76 +1,115 @@
 {% extends 'library/layout.html' %}
+{% load static %}
+{% load youtube_filters %}
 
 {% block title %}{{ profile_user.username }}'s Profile - E-Library{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h2>{{ profile_user.username }}'s Profile</h2>
+<div class="container mt-5">
+    <div class="card bg-dark-gray text-white shadow-sm">
+        <div class="card-body">
+            <!-- Profile Header -->
+            <div class="d-flex align-items-center mb-4">
+                {% if profile_user.profile.avatar %}
+                    <img src="{{ profile_user.profile.avatar.url }}" alt="{{ profile_user.username }}'s avatar" class="rounded-circle mr-3" width="100" height="100">
+                {% else %}
+                    <img src="{% static 'library/img/default_avatar.png' %}" alt="{{ profile_user.username }}'s avatar" class="rounded-circle mr-3" width="100" height="100">
+                {% endif %}
+                <div>
+                    <h2 class="card-title text-yellow">{{ profile_user.username }}</h2>
+                    <p class="text-muted mb-0">{{ profile_user.profile.bio }}</p>
+                </div>
+            </div>
 
-    {% if profile_user.profile.avatar %}
-        <img src="{{ profile_user.profile.avatar.url }}" alt="{{ profile_user.username }}'s avatar" class="img-thumbnail" width="150">
-    {% endif %}
+            {% if is_own_profile %}
+                <a href="{% url 'edit_profile' %}" class="btn btn-yellow mb-4">
+                    <i class="fas fa-edit"></i> Edit Profile
+                </a>
+            {% endif %}
 
-    <p>{{ profile_user.profile.bio }}</p>
-
-    {% if is_own_profile %}
-        <a href="{% url 'edit_profile' %}" class="btn btn-secondary">Edit Profile</a>
-    {% endif %}
-
-    <hr>
-
-    <h3>Uploaded Resources</h3>
-    {% if uploaded_resources %}
-        <ul class="list-group">
-            {% for resource in uploaded_resources %}
-                <li class="list-group-item">
-                    <a href="">{{ resource.title }}</a>
-                    <span class="text-muted">({{ resource.upload_date|date:"M d, Y" }})</span>
+            <!-- Tabs for Activity -->
+            <ul class="nav nav-tabs" id="profileTab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="uploaded-resources-tab" data-toggle="tab" href="#uploaded-resources" role="tab" aria-controls="uploaded-resources" aria-selected="true">Uploaded Resources</a>
                 </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No resources uploaded yet.</p>
-    {% endif %}
-
-    <hr>
-
-    <h3>Activity History</h3>
-    <ul class="nav nav-tabs" id="activityTab" role="tablist">
-        <li class="nav-item">
-            <a class="nav-link active" id="downloads-tab" data-toggle="tab" href="#downloads" role="tab" aria-controls="downloads" aria-selected="true">Downloads</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" id="views-tab" data-toggle="tab" href="#views" role="tab" aria-controls="views" aria-selected="false">Views</a>
-        </li>
-    </ul>
-    <div class="tab-content" id="activityTabContent">
-        <div class="tab-pane fade show active" id="downloads" role="tabpanel" aria-labelledby="downloads-tab">
-            {% if downloads %}
-                <ul class="list-group mt-3">
-                    {% for download in downloads %}
-                        <li class="list-group-item">
-                            <a href="">{{ download.resource.title }}</a>
-                            <span class="text-muted">({{ download.download_date|date:"M d, Y H:i" }})</span>
+                {% if is_own_profile %}
+                <li class="nav-item">
+                    <a class="nav-link" id="activity-history-tab" data-toggle="tab" href="#activity-history" role="tab" aria-controls="activity-history" aria-selected="false">Activity History</a>
+                </li>
+                {% endif %}
+            </ul>
+            <div class="tab-content mt-4" id="profileTabContent">
+                <!-- Uploaded Resources Tab -->
+                <div class="tab-pane fade show active" id="uploaded-resources" role="tabpanel" aria-labelledby="uploaded-resources-tab">
+                    {% if uploaded_resources %}
+                        <div class="row">
+                            {% for resource in uploaded_resources %}
+                                <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
+                                    <div class="card h-100 bg-gray text-white">
+                                        {% if resource.resource_type == 'Video' %}
+                                        <img src="https://img.youtube.com/vi/{{ resource.video_url|youtube_video_id }}/hqdefault.jpg" class="card-img-top" alt="Video thumbnail">
+                                        {% elif resource.resource_type == 'Document' %}
+                                            <img src="{% static 'library/img/document_icon.png' %}" class="card-img-top" alt="Document thumbnail">
+                                        {% endif %}
+                                        <div class="card-body d-flex flex-column">
+                                            <h5 class="card-title">{{ resource.title }}</h5>
+                                            <p class="card-text">{{ resource.description|truncatewords:15 }}</p>
+                                            <a href="{% url 'resource_detail' resource_id=resource.id %}" class="btn btn-primary mt-auto">View Resource</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p>No resources uploaded yet.</p>
+                    {% endif %}
+                </div>
+                <!-- Activity History Tab -->
+                {% if is_own_profile %}
+                <div class="tab-pane fade" id="activity-history" role="tabpanel" aria-labelledby="activity-history-tab">
+                    <ul class="nav nav-pills mb-3" id="activitySubTab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="downloads-tab" data-toggle="tab" href="#downloads" role="tab" aria-controls="downloads" aria-selected="true">Downloads</a>
                         </li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <p class="mt-3">No downloads yet.</p>
-            {% endif %}
-        </div>
-        <div class="tab-pane fade" id="views" role="tabpanel" aria-labelledby="views-tab">
-            {% if views %}
-                <ul class="list-group mt-3">
-                    {% for view in views %}
-                        <li class="list-group-item">
-                            <a href="">{{ view.resource.title }}</a>
-                            <span class="text-muted">({{ view.view_date|date:"M d, Y H:i" }})</span>
+                        <li class="nav-item">
+                            <a class="nav-link" id="views-tab" data-toggle="tab" href="#views" role="tab" aria-controls="views" aria-selected="false">Views</a>
                         </li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <p class="mt-3">No views yet.</p>
-            {% endif %}
+                    </ul>
+                    <div class="tab-content" id="activitySubTabContent">
+                        <!-- Downloads Tab -->
+                        <div class="tab-pane fade show active" id="downloads" role="tabpanel" aria-labelledby="downloads-tab">
+                            {% if downloads %}
+                                <ul class="list-group list-group-flush">
+                                    {% for download in downloads %}
+                                        <li class="list-group-item bg-dark-gray text-white">
+                                            <a href="{% url 'resource_detail' resource_id=download.resource.id %}" class="text-yellow">{{ download.resource.title }}</a>
+                                            <span class="text-muted float-right">{{ download.download_date|date:"M d, Y H:i" }}</span>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p>No downloads yet.</p>
+                            {% endif %}
+                        </div>
+                        <!-- Views Tab -->
+                        <div class="tab-pane fade" id="views" role="tabpanel" aria-labelledby="views-tab">
+                            {% if views %}
+                                <ul class="list-group list-group-flush">
+                                    {% for view in views %}
+                                        <li class="list-group-item bg-dark-gray text-white">
+                                            <a href="{% url 'resource_detail' resource_id=view.resource.id %}" class="text-yellow">{{ view.resource.title }}</a>
+                                            <span class="text-muted float-right">{{ view.view_date|date:"M d, Y H:i" }}</span>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p>No views yet.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
         </div>
     </div>
 </div>

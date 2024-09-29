@@ -1,24 +1,312 @@
+/* styles.css */
+
+/* General Styles */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f9f9f9;
-    margin: 0;
-    padding: 0;
+    background-image: url('/static/library/img/background.png'); /* Hardcode the static URL */
+    background-size: cover;         /* Ensures the image covers the entire screen */
+    background-position: center;    /* Centers the background image */
+    background-attachment: fixed;   /* Keeps the background image fixed during scrolling */
+    background-repeat: no-repeat;   /* Prevents the image from repeating */
+    background-color: #0A0A0A;
+    color: #F8F9FA;
+    font-family: 'Roboto', sans-serif;
+    scrollbar-width: thin;
+    scrollbar-color: #FFC107 #1C1C1C;
 }
 
-h1 {
-    color: #4CAF50;
+/* Heading Styles */
+h2 {
+    font-weight: 700;
+    color: #FFC107;
 }
 
-button {
-    background-color: #4CAF50;
-    border: none;
-    color: white;
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
+/* Card Styles */
+.card {
+    background-color: #1C1C1C;
+    border: 1px solid #2E2E2E;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(255, 193, 7, 0.1);
+}
+
+.card-img-top {
+    height: 180px;
+    object-fit: cover;
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #FFC107;
+}
+
+.card-text {
+    color: #F8F9FA;
+    font-size: 0.95rem;
+    flex-grow: 1;
+}
+
+.btn-primary {
+    background-color: #FFC107;
+    border-color: #FFC107;
+    color: #212529;
+    transition: background-color 0.2s, border-color 0.2s;
+    margin-top: auto;
+}
+
+.btn-primary:hover {
+    background-color: #e0a800;
+    border-color: #d39e00;
+    color: #212529;
+}
+
+.card-footer {
+    background-color: transparent;
+    border-top: none;
+    font-size: 0.85rem;
+    color: #adb5bd;
+}
+
+/* Container Adjustments */
+.container {
+    max-width: 1200px;
+}
+
+/* Responsive Image */
+@media (max-width: 767.98px) {
+    .card-img-top {
+        height: 150px;
+    }
+}
+
+/* Scrollbar Styles for WebKit Browsers */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1C1C1C;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #FFC107;
     border-radius: 5px;
 }
 
-button:hover {
-    background-color: #45a049;
+::-webkit-scrollbar-thumb:hover {
+    background: #e0a800;
+}
+
+/* Navbar Styles */
+.navbar {
+    background-color: #0A0A0A;
+}
+
+.nav-link, .navbar-brand {
+    color: #FFC107 !important;
+}
+
+.nav-link:hover, .navbar-brand:hover {
+    color: #e0a800 !important;
+}
+
+.card-img-top {
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover .card-img-top {
+    transform: scale(1.05);
+}
+
+/* For the select dropdown to have black text inside the dropdown */
+select.form-control {
+    color: #F8F9FA; /* White text for the select box when it is not opened */
+    background-color: #1C1C1C;
+}
+
+select.form-control option {
+    color: #000; /* Black text for the options inside the dropdown */
+    background-color: #F8F9FA; /* Optional: Light background for options */
+}
+
+select.form-control option:checked {
+    color: #F8F9FA; /* White text for selected option */
+    background-color: #1C1C1C;
+}
+
+select.form-control:focus {
+    color: #F8F9FA; /* Ensuring white text when focused */
+    background-color: #1C1C1C;
+    border-color: #FFC107; /* Optional: Yellow border when focused */
+    outline: none;
+    box-shadow: 0 0 5px rgba(255, 193, 7, 0.5);
+}
+
+
+/* General form input styling */
+.form-control {
+    background-color: #2e2e2e;  /* Dark gray */
+    color: #f8f9fa;  /* White text */
+    border: 1px solid #3a3a3a;  /* Lighter gray border */
+}
+
+.form-control::placeholder {
+    color: #d3d3d3;  /* Lighter gray for placeholder */
+    opacity: 1; /* Ensure placeholder visibility */
+}
+
+.form-control:focus {
+    background-color: #3a3a3a;
+    color: #ffffff;
+    border-color: #ffc107;  /* Yellow border on focus */
+}
+
+/* Download Button */
+.btn-download {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: #ffffff;
+}
+
+.btn-download:hover {
+    background-color: #0056b3;
+    border-color: #00408a;
+    color: #ffffff;
+}
+
+/* Submit Rating Button */
+.btn-rating-submit {
+    background-color: #28a745;
+    border-color: #28a745;
+    color: #ffffff;
+}
+
+.btn-rating-submit:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+    color: #ffffff;
+}
+
+/* Rating Form Inline */
+form.d-flex.flex-wrap {
+    display: flex;
+    align-items: center;
+}
+
+
+
+/* Horizontal Radio Buttons */
+.rating-horizontal {
+    display: flex;
+    align-items: center;
+}
+
+.rating-horizontal label {
+    margin-right: 10px;
+    margin-bottom: 0;
+    color: #F8F9FA; /* Ensure text color for labels is visible */
+}
+
+.rating-horizontal input[type="radio"] {
+    margin-right: 5px;
+    transform: scale(1.2); /* Optional: makes the radio buttons bigger */
+}
+
+.btn-rating-submit {
+    background-color: #FFC107; /* Your button color */
+    border-color: #FFC107;
+    color: #212529;
+}
+
+.btn-rating-submit:hover {
+    background-color: #e0a800;
+    border-color: #d39e00;
+    color: #212529;
+}
+
+/* Bookmark List Styling */
+.list-group-item {
+    background-color: #1C1C1C;
+    border: 1px solid #2E2E2E;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    padding: 1rem;
+}
+
+.list-group-item:hover {
+    background-color: #2A2A2A;
+    box-shadow: 0 4px 8px rgba(255, 193, 7, 0.1);
+}
+
+.list-group-item-action {
+    color: #FFC107;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.list-group-item-action:hover {
+    color: #e0a800;
+}
+
+.list-group-item small {
+    color: #adb5bd;
+}
+
+/* Form Background and General Styling */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+textarea.form-control {
+    resize: none;
+    height: 150px;  /* Adjust height as needed */
+}
+
+/* Submit Button */
+.btn-yellow {
+    background-color: #FFC107;
+    border-color: #FFC107;
+    color: #212529;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.btn-yellow:hover {
+    background-color: #e0a800;
+    border-color: #d39e00;
+}
+
+/* File Input */
+.form-control-file {
+    color: #F8F9FA; /* White text for file input */
+}
+
+.form-control-file::file-selector-button {
+    background-color: green;
+    color: #212529;
+    border: 1px solid green;
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.form-control-file::file-selector-button:hover {
+    background-color: #e0a800;
+    border-color: #d39e00;
+}
+
+/* Align file input and avatar label */
+.form-control-file + .form-control {
+    display: inline-block;
+    width: auto;
 }

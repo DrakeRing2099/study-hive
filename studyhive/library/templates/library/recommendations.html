@@ -1,0 +1,36 @@
+{% extends 'library/layout.html' %}
+{% load static %}
+{% load youtube_filters %}
+
+{% block title %}Recommendations - E-Library{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Recommended for You</h2>
+    {% if recommendations %}
+        <div class="row">
+            {% for resource in recommendations %}
+                <div class="col-sm-6 col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        {% if resource.resource_type == 'Video' %}
+                            <img src="https://img.youtube.com/vi/{{ resource.video_url|youtube_video_id }}/hqdefault.jpg" class="card-img-top" alt="Video thumbnail">
+                        {% elif resource.resource_type == 'Document' %}
+                            <img src="{% static 'library/img/document_icon.png' %}" class="card-img-top" alt="Document thumbnail">
+                        {% endif %}
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">{{ resource.title }}</h5>
+                            <p class="card-text">{{ resource.description|truncatewords:15 }}</p>
+                            <a href="{% url 'resource_detail' resource_id=resource.id %}" class="btn btn-primary mt-auto">View Resource</a>
+                        </div>
+                        <div class="card-footer">
+                            <small>Uploaded by {{ resource.uploader.username }} on {{ resource.upload_date|date:"M d, Y" }}</small>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No recommendations available at this time.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends 'library/layout.html' %}
+
+{% block title %}Search Results - E-Library{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Search Results{% if query %} for "{{ query }}"{% endif %}</h2>
+    {% if resources %}
+        <div class="row">
+            {% for resource in resources %}
+                <div class="col-md-4">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ resource.title }}</h5>
+                            <p class="card-text">{{ resource.description|truncatewords:20 }}</p>
+                            <a href="{% url 'resource_detail' resource_id=resource.id %}" class="btn btn-primary">View Resource</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No resources found matching your query.</p>
+    {% endif %}
+</div>
+{% endblock %}
