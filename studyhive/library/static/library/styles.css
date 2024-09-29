@@ -151,3 +151,22 @@ select.form-control:focus {
     outline: none;
     box-shadow: 0 0 5px rgba(255, 193, 7, 0.5);
 }
+
+
+/* General form input styling */
+.form-control {
+    background-color: #2e2e2e;  /* Dark gray */
+    color: #f8f9fa;  /* White text */
+    border: 1px solid #3a3a3a;  /* Lighter gray border */
+}
+
+.form-control::placeholder {
+    color: #d3d3d3;  /* Lighter gray for placeholder */
+    opacity: 1; /* Ensure placeholder visibility */
+}
+
+.form-control:focus {
+    background-color: #3a3a3a;
+    color: #ffffff;
+    border-color: #ffc107;  /* Yellow border on focus */
+}
