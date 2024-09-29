@@ -2,17 +2,21 @@
 
 {% block content %}
 
-    <h2>Register</h2>
+<div class="container form-container mt-5">
+    <h2 class="form-heading">Register</h2>
 
     {% if message %}
-        <div>{{ message }}</div>
+        <div class="alert alert-success message-box">{{ message }}</div>
     {% endif %}
 
-    <form method="post">
+    <form method="post" class="registration-form">
         {% csrf_token %}
-        {{ form.as_p }}
+        <div class="form-group">
+            {{ form.as_p }}
+        </div>
+        
         {% if form.errors %}
-            <ul>
+            <ul class="form-errors">
                 {% for field in form %}
                     {% for error in field.errors %}
                         <li>{{ error }}</li>
@@ -23,9 +27,12 @@
                 {% endfor %}
             </ul>
         {% endif %}
-        <button type="submit">Register</button>
+
+        <button type="submit" class="btn btn-primary btn-block">Register</button>
     </form>
 
-    Already have an account? <a href="{% url 'login' %}">Log In here.</a>
+    <p class="mt-3">Already have an account? <a href="{% url 'login' %}">Log In here.</a></p>
+
+</div>
 
 {% endblock %}

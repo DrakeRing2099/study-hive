@@ -310,3 +310,92 @@ textarea.form-control {
     display: inline-block;
     width: auto;
 }
+
+/* styles.css */
+
+/* General Form Styles */
+.form-container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #1C1C1C;  /* Dark background */
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);  /* Subtle shadow */
+}
+
+/* Form Heading */
+.form-heading {
+    font-weight: 700;
+    color: #FFC107;  /* Yellow heading */
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Form Inputs */
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #3a3a3a;  /* Gray border */
+    border-radius: 5px;
+    background-color: #2E2E2E;  /* Dark gray input background */
+    color: #F8F9FA;  /* White text */
+}
+
+/* Placeholder styling */
+.form-group input::placeholder {
+    color: #b5b5b5;  /* Lighter gray for placeholder */
+}
+
+/* Error List Styling */
+.form-errors {
+    color: #dc3545;  /* Red for error text */
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.form-errors li {
+    margin-bottom: 5px;
+}
+
+/* Success/Message Box */
+.message-box {
+    padding: 10px;
+    margin-bottom: 15px;
+    background-color: #28a745; /* Success green */
+    border-radius: 5px;
+    color: #FFF;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* Button Styling */
+.btn-block {
+    width: 100%;
+    padding: 10px;
+    background-color: #FFC107;  /* Yellow button */
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #212529;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-block:hover {
+    background-color: #e0a800;
+}
+
+/* Link Styling */
+p a {
+    color: #FFC107;
+    text-decoration: none;
+}
+
+p a:hover {
+    color: #e0a800;
+    text-decoration: underline;
+}

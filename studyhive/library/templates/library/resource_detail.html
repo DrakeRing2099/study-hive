@@ -1,5 +1,6 @@
 {% extends 'library/layout.html' %}
 {% load static %}
+{% load form_tags %}
 {% load youtube_filters %}
 
 {% block title %}{{ resource.title }} - E-Library{% endblock %}
@@ -114,13 +115,20 @@
 
             {% if user.is_authenticated %}
                 <h5>Leave a Comment</h5>
-                <form method="post">
+                <form method="post" class="d-flex flex-column align-items-start" style="width: 100%; max-width: 600px; background-color: #1C1C1C; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">
                     {% csrf_token %}
-                    {{ comment_form.as_p }}
-                    <button type="submit" name="comment_form" class="btn btn-success">
-                        <i class="fas fa-comment"></i> Post Comment
+                    
+                    <div class="form-group" style="width: 100%;">
+                        {{ comment_form.comment_text.label_tag }}
+                        {{ comment_form.comment_text|add_class:"form-control bg-dark text-white" }}
+                        {{ comment_form.comment_text.errors }}
+                    </div>
+                    
+                    <button type="submit" name="comment_form" class="btn btn-success mt-3" style="background-color: #28a745; border-color: #28a745; padding: 10px 20px; border-radius: 5px; font-size: 16px; display: flex; align-items: center;">
+                        <i class="fas fa-comment mr-2"></i> Post Comment
                     </button>
                 </form>
+                
             {% else %}
                 <p><a href="{% url 'login' %}" class="text-yellow">Log in</a> to post a comment.</p>
             {% endif %}

@@ -17,4 +17,5 @@ urlpatterns = [
     path('tag/<int:tag_id>/', views.tag_resources, name='tag_resources'),
     path('recommendations/', views.recommendations_view, name='recommendations'),
     path('search/', views.search_resources, name='search_resources'),
+    path('subject/<int:subject_id>/', views.subject_resources, name='subject_resources'),
 ]
