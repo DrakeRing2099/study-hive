@@ -233,3 +233,80 @@ form.d-flex.flex-wrap {
     border-color: #d39e00;
     color: #212529;
 }
+
+/* Bookmark List Styling */
+.list-group-item {
+    background-color: #1C1C1C;
+    border: 1px solid #2E2E2E;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    padding: 1rem;
+}
+
+.list-group-item:hover {
+    background-color: #2A2A2A;
+    box-shadow: 0 4px 8px rgba(255, 193, 7, 0.1);
+}
+
+.list-group-item-action {
+    color: #FFC107;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.list-group-item-action:hover {
+    color: #e0a800;
+}
+
+.list-group-item small {
+    color: #adb5bd;
+}
+
+/* Form Background and General Styling */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+textarea.form-control {
+    resize: none;
+    height: 150px;  /* Adjust height as needed */
+}
+
+/* Submit Button */
+.btn-yellow {
+    background-color: #FFC107;
+    border-color: #FFC107;
+    color: #212529;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.btn-yellow:hover {
+    background-color: #e0a800;
+    border-color: #d39e00;
+}
+
+/* File Input */
+.form-control-file {
+    color: #F8F9FA; /* White text for file input */
+}
+
+.form-control-file::file-selector-button {
+    background-color: green;
+    color: #212529;
+    border: 1px solid green;
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.form-control-file::file-selector-button:hover {
+    background-color: #e0a800;
+    border-color: #d39e00;
+}
+
+/* Align file input and avatar label */
+.form-control-file + .form-control {
+    display: inline-block;
+    width: auto;
+}

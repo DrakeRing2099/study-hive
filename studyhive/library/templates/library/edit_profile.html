@@ -1,24 +1,28 @@
 {% extends 'library/layout.html' %}
+{% load form_tags %}
 
 {% block title %}Edit Profile - E-Library{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h2>Edit Profile</h2>
-    <form method="post" enctype="multipart/form-data">
+<div class="container mt-5">
+    <h2 class="mb-4 text-yellow">Edit Profile</h2>
+    <form method="post" enctype="multipart/form-data" class="bg-dark-gray p-4 rounded shadow">
         {% csrf_token %}
         {{ form.non_field_errors }}
+        <!-- Bio Field -->
         <div class="form-group">
             {{ form.bio.label_tag }}
-            {{ form.bio }}
+            {{ form.bio|add_class:"form-control bg-gray text-white" }}
             {{ form.bio.errors }}
         </div>
+        <!-- Avatar Field -->
         <div class="form-group">
             {{ form.avatar.label_tag }}
-            {{ form.avatar }}
+            {{ form.avatar|add_class:"form-control-file text-white" }}
             {{ form.avatar.errors }}
         </div>
-        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-yellow">Save Changes</button>
     </form>
 </div>
 {% endblock %}
