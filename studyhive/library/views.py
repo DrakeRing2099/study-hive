@@ -391,6 +391,7 @@ def recommendations_view(request):
     }
     return render(request, 'library/recommendations.html', context)
 
+
 def search_resources(request):
     query = request.GET.get('q')
     resources = Resource.objects.filter(is_active=True)
@@ -402,8 +403,29 @@ def search_resources(request):
             Q(tags__name__icontains=query)
         ).distinct()
     
+    # Filtering by subject
+    subject_id = request.GET.get('subject')
+    if subject_id:
+        resources = resources.filter(subject__id=subject_id)
+    
+    # Filtering by resource type
+    resource_type = request.GET.get('resource_type')
+    if resource_type:
+        resources = resources.filter(resource_type=resource_type)
+    
+    # Filtering by file type
+    file_type = request.GET.get('file_type')
+    if file_type:
+        resources = resources.filter(file_type=file_type)
+    
+    # Get all subjects and file types for filter options
+    subjects = Subject.objects.all()
+    file_types = Resource.FILE_TYPE_CHOICES  # Assuming you have this in your model
+    
     context = {
         'resources': resources,
         'query': query,
+        'subjects': subjects,
+        'file_types': [ft[0] for ft in file_types],  # Extract file type names
     }
     return render(request, 'library/search_results.html', context)

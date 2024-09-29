@@ -21,3 +21,18 @@ def youtube_embed_url(value):
         video_id = match.group(6)
         return f'https://www.youtube.com/embed/{video_id}'
     return value
+
+@register.filter
+def youtube_video_id(value):
+    """
+    Extracts YouTube video ID from a given URL.
+    Works with multiple formats like:
+    - https://www.youtube.com/watch?v=ID
+    - https://youtu.be/ID
+    """
+    youtube_regex = (r'(https?://)?(www\.)?(youtube|youtu|youtube-nocookie)\.(com|be)/'
+                     r'(watch\?v=|embed/|v/|.+\?v=)?([^&=%\?]{11})')
+    match = re.match(youtube_regex, value)
+    if match:
+        return match.group(6)
+    return None

@@ -1,24 +1,124 @@
+/* styles.css */
+
+/* General Styles */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f9f9f9;
-    margin: 0;
-    padding: 0;
+    background-color: #0A0A0A;
+    color: #F8F9FA;
+    font-family: 'Roboto', sans-serif;
+    scrollbar-width: thin;
+    scrollbar-color: #FFC107 #1C1C1C;
 }
 
-h1 {
-    color: #4CAF50;
+/* Heading Styles */
+h2 {
+    font-weight: 700;
+    color: #FFC107;
 }
 
-button {
-    background-color: #4CAF50;
-    border: none;
-    color: white;
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
+/* Card Styles */
+.card {
+    background-color: #1C1C1C;
+    border: 1px solid #2E2E2E;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(255, 193, 7, 0.1);
+}
+
+.card-img-top {
+    height: 180px;
+    object-fit: cover;
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #FFC107;
+}
+
+.card-text {
+    color: #F8F9FA;
+    font-size: 0.95rem;
+    flex-grow: 1;
+}
+
+.btn-primary {
+    background-color: #FFC107;
+    border-color: #FFC107;
+    color: #212529;
+    transition: background-color 0.2s, border-color 0.2s;
+    margin-top: auto;
+}
+
+.btn-primary:hover {
+    background-color: #e0a800;
+    border-color: #d39e00;
+    color: #212529;
+}
+
+.card-footer {
+    background-color: transparent;
+    border-top: none;
+    font-size: 0.85rem;
+    color: #adb5bd;
+}
+
+/* Container Adjustments */
+.container {
+    max-width: 1200px;
+}
+
+/* Responsive Image */
+@media (max-width: 767.98px) {
+    .card-img-top {
+        height: 150px;
+    }
+}
+
+/* Scrollbar Styles for WebKit Browsers */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1C1C1C;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #FFC107;
     border-radius: 5px;
 }
 
-button:hover {
-    background-color: #45a049;
+::-webkit-scrollbar-thumb:hover {
+    background: #e0a800;
+}
+
+/* Navbar Styles */
+.navbar {
+    background-color: #0A0A0A;
+}
+
+.nav-link, .navbar-brand {
+    color: #FFC107 !important;
+}
+
+.nav-link:hover, .navbar-brand:hover {
+    color: #e0a800 !important;
+}
+
+.card-img-top {
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover .card-img-top {
+    transform: scale(1.05);
 }
