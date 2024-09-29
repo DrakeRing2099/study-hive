@@ -2,6 +2,11 @@
 
 /* General Styles */
 body {
+    background-image: url('/static/library/img/background.png'); /* Hardcode the static URL */
+    background-size: cover;         /* Ensures the image covers the entire screen */
+    background-position: center;    /* Centers the background image */
+    background-attachment: fixed;   /* Keeps the background image fixed during scrolling */
+    background-repeat: no-repeat;   /* Prevents the image from repeating */
     background-color: #0A0A0A;
     color: #F8F9FA;
     font-family: 'Roboto', sans-serif;
@@ -121,4 +126,28 @@ h2 {
 
 .card:hover .card-img-top {
     transform: scale(1.05);
+}
+
+/* For the select dropdown to have black text inside the dropdown */
+select.form-control {
+    color: #F8F9FA; /* White text for the select box when it is not opened */
+    background-color: #1C1C1C;
+}
+
+select.form-control option {
+    color: #000; /* Black text for the options inside the dropdown */
+    background-color: #F8F9FA; /* Optional: Light background for options */
+}
+
+select.form-control option:checked {
+    color: #F8F9FA; /* White text for selected option */
+    background-color: #1C1C1C;
+}
+
+select.form-control:focus {
+    color: #F8F9FA; /* Ensuring white text when focused */
+    background-color: #1C1C1C;
+    border-color: #FFC107; /* Optional: Yellow border when focused */
+    outline: none;
+    box-shadow: 0 0 5px rgba(255, 193, 7, 0.5);
 }
