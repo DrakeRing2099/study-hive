@@ -170,3 +170,66 @@ select.form-control:focus {
     color: #ffffff;
     border-color: #ffc107;  /* Yellow border on focus */
 }
+
+/* Download Button */
+.btn-download {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: #ffffff;
+}
+
+.btn-download:hover {
+    background-color: #0056b3;
+    border-color: #00408a;
+    color: #ffffff;
+}
+
+/* Submit Rating Button */
+.btn-rating-submit {
+    background-color: #28a745;
+    border-color: #28a745;
+    color: #ffffff;
+}
+
+.btn-rating-submit:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+    color: #ffffff;
+}
+
+/* Rating Form Inline */
+form.d-flex.flex-wrap {
+    display: flex;
+    align-items: center;
+}
+
+
+
+/* Horizontal Radio Buttons */
+.rating-horizontal {
+    display: flex;
+    align-items: center;
+}
+
+.rating-horizontal label {
+    margin-right: 10px;
+    margin-bottom: 0;
+    color: #F8F9FA; /* Ensure text color for labels is visible */
+}
+
+.rating-horizontal input[type="radio"] {
+    margin-right: 5px;
+    transform: scale(1.2); /* Optional: makes the radio buttons bigger */
+}
+
+.btn-rating-submit {
+    background-color: #FFC107; /* Your button color */
+    border-color: #FFC107;
+    color: #212529;
+}
+
+.btn-rating-submit:hover {
+    background-color: #e0a800;
+    border-color: #d39e00;
+    color: #212529;
+}
